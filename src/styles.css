@@ -1367,6 +1367,23 @@ body {
   white-space: nowrap;
 }
 
+/* ── Skill category sections ─────────────────────────────────── */
+.skill-category-section {
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.skill-category-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(214, 40, 40, 0.75);
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(214, 40, 40, 0.18);
+}
+
 /* Back to galaxy button */
 .back-galaxy-btn {
   margin-top: 36px;
@@ -1416,6 +1433,14 @@ body {
 
   .skill-showcase-name {
     font-size: 13px;
+  }
+
+  .skill-category-label {
+    font-size: 10px;
+  }
+
+  .skill-category-section {
+    margin-bottom: 20px;
   }
 
   .explore-btn {

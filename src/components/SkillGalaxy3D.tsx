@@ -4,18 +4,17 @@ import { Html } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import OrbitRing from './OrbitRing';
 import Planet from './Planet';
-import { skills, showcaseSkills } from './SkillData';
+import { skills, showcaseCategories } from './SkillData';
 
 function ResponsiveCamera() {
   const { camera, size } = useThree();
 
   useEffect(() => {
     const aspect = size.width / size.height;
-    // On wide viewports, use a closer base Z to make the galaxy look larger and fill the screen.
-    // On narrower viewports (aspect < 1.35), dynamically scale the Z/Y out to prevent horizontal clipping.
-    const baseZ = 15.5;
-    const requiredZ = aspect < 1.35 ? Math.max(baseZ, 20.0 / aspect) : baseZ;
-    const requiredY = (requiredZ / 15.5) * 6.9; // Maintain same tilt ratio
+    // With 6 orbits the galaxy is wider — pull the camera back a bit more
+    const baseZ = 18;
+    const requiredZ = aspect < 1.35 ? Math.max(baseZ, 24.0 / aspect) : baseZ;
+    const requiredY = (requiredZ / 18) * 8;
 
     camera.position.set(0, requiredY, requiredZ);
     camera.lookAt(0, 0, 0);
@@ -25,12 +24,14 @@ function ResponsiveCamera() {
   return null;
 }
 
-// Orbit ring config: radius on XZ plane, Z offset for depth layering
+// 6 orbit rings: radius on XZ plane, Z offset for depth layering
 const rings = [
-  { radius: 4.2,  z: -1.5 },
-  { radius: 6.0,  z: -0.5 },
-  { radius: 7.8,  z:  0.5 },
-  { radius: 9.6,  z:  1.5 },
+  { radius: 3.5,  z: -2.5 },
+  { radius: 5.2,  z: -1.5 },
+  { radius: 6.9,  z: -0.5 },
+  { radius: 8.6,  z:  0.5 },
+  { radius: 10.3, z:  1.5 },
+  { radius: 12.0, z:  2.5 },
 ];
 
 export default function SkillGalaxy3D() {
@@ -75,19 +76,19 @@ export default function SkillGalaxy3D() {
                   position={[0, 0, 0]}
                   color="#D62828"
                   intensity={5}
-                  distance={30}
+                  distance={35}
                   decay={2}
                 />
                 <pointLight
                   position={[10, 6, 4]}
                   color="#ff4500"
                   intensity={1.5}
-                  distance={30}
+                  distance={35}
                   decay={2}
                 />
                 <directionalLight position={[5, 5, 5]} color="#fff0f0" intensity={0.6} />
 
-                {/* ── Central Planet Assembly (pushed back to Z = -1.2) ── */}
+                {/* ── Central Planet Assembly ── */}
                 <group position={[0, 0, -1.2]}>
                   {/* Core sphere */}
                   <mesh>
@@ -133,7 +134,7 @@ export default function SkillGalaxy3D() {
                   </Html>
                 </group>
 
-                {/* Orbit rings */}
+                {/* Orbit rings — 6 total */}
                 {rings.map((ring, i) => (
                   <OrbitRing key={i} radius={ring.radius} />
                 ))}
@@ -158,7 +159,7 @@ export default function SkillGalaxy3D() {
           )}
         </AnimatePresence>
 
-        {/* ── SKILL SHOWCASE ── */}
+        {/* ── SKILL SHOWCASE (categorised) ── */}
         <AnimatePresence>
           {exploreMode && (
             <motion.div
@@ -178,39 +179,56 @@ export default function SkillGalaxy3D() {
                 <h3 className="skill-showcase-title">Full Stack Arsenal</h3>
               </motion.div>
 
-              {/* Skill cards grid */}
-              <div className="skill-showcase-grid">
-                {showcaseSkills.map((skill, i) => (
-                  <motion.div
-                    key={skill.name}
-                    className="skill-showcase-card"
-                    initial={{ opacity: 0, y: 40, scale: 0.82 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{
-                      delay: 0.12 + i * 0.07,
-                      duration: 0.44,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                    whileHover={{
-                      y: -5,
-                      scale: 1.06,
-                      transition: { duration: 0.18 },
-                    }}
-                  >
-                    <div className="skill-showcase-icon">
-                      <img src={skill.img} alt={skill.name} draggable={false} />
-                    </div>
-                    <span className="skill-showcase-name">{skill.name}</span>
-                  </motion.div>
-                ))}
-              </div>
+              {/* Categorised sections */}
+              {showcaseCategories.map((cat, catIdx) => (
+                <motion.div
+                  key={cat.category}
+                  className="skill-category-section"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: { delay: 0.1 + catIdx * 0.12, duration: 0.45 },
+                  }}
+                >
+                  <h4 className="skill-category-label">{cat.category}</h4>
+                  <div className="skill-showcase-grid">
+                    {cat.skills.map((skill, i) => {
+                      const globalIdx = catIdx * 10 + i;
+                      return (
+                        <motion.div
+                          key={skill.name}
+                          className="skill-showcase-card"
+                          initial={{ opacity: 0, y: 40, scale: 0.82 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{
+                            delay: 0.15 + catIdx * 0.12 + i * 0.06,
+                            duration: 0.44,
+                            ease: [0.22, 1, 0.36, 1],
+                          }}
+                          whileHover={{
+                            y: -5,
+                            scale: 1.06,
+                            transition: { duration: 0.18 },
+                          }}
+                        >
+                          <div className="skill-showcase-icon">
+                            <img src={skill.img} alt={skill.name} draggable={false} />
+                          </div>
+                          <span className="skill-showcase-name">{skill.name}</span>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              ))}
 
               {/* Back button */}
               <motion.button
                 className="back-galaxy-btn"
                 onClick={() => setExploreMode(false)}
                 initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0, transition: { delay: 0.55, duration: 0.4 } }}
+                animate={{ opacity: 1, y: 0, transition: { delay: 0.65, duration: 0.4 } }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.96 }}
               >
