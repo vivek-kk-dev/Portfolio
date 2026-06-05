@@ -1,0 +1,1453 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #f5f5f5;
+  background: #0b0b0b;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #0b0b0b;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  transition: background-color 900ms ease;
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+::selection {
+  background: #d62828;
+  color: #f5f5f5;
+}
+
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image:
+    radial-gradient(circle at 25% 20%, rgba(255, 255, 255, .11) 0 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, .08) 0 1px, transparent 1px);
+  background-size: 4px 4px, 7px 7px;
+}
+
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(245, 245, 245, 0.72);
+}
+
+.hero-poster {
+  @apply relative min-h-screen overflow-hidden;
+  
+  background-color: #0b0b0b;
+}
+
+/* Subtle dark-red ambient gradients on the hero canvas */
+.hero-poster::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 75% 45%, rgba(139, 0, 0, 0.22) 0%, transparent 55%),
+    radial-gradient(circle at 85% 25%, rgba(90, 26, 26, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(60, 15, 15, 0.06) 0%, transparent 50%);
+}
+
+.hero-poster::after {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 80% 50%, rgba(139, 0, 0, 0.18), transparent 35%),
+    radial-gradient(circle at 90% 60%, rgba(90, 26, 26, 0.12), transparent 30%);
+  filter: blur(60px);
+}
+
+/* â”€â”€ Giant blurred orb â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero-orb {
+  pointer-events: none;
+  position: absolute;
+  right: -8%;
+  top: -5%;
+  width: 65vw;
+  height: 65vw;
+  border-radius: 50%;
+  z-index: 0;
+  background: radial-gradient(circle,
+      rgba(90, 42, 42, 0.45) 0%,
+      rgba(75, 35, 35, 0.30) 30%,
+      rgba(39, 20, 20, 0.15) 60%,
+      transparent 100%);
+  filter: blur(100px);
+  will-change: transform;
+}
+
+/* â”€â”€ Vertical light rays â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero-rays {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  mix-blend-mode: soft-light;
+  filter: blur(40px);
+  background:
+    linear-gradient(180deg, rgba(41, 39, 45, 0.05) 0%, transparent 100%) 8% 0 / 80px 100% no-repeat,
+    linear-gradient(180deg, rgba(59, 30, 31, 0.04) 0%, transparent 100%) 23% 0 / 130px 100% no-repeat,
+    linear-gradient(180deg, rgba(75, 35, 35, 0.03) 0%, transparent 100%) 41% 0 / 60px 100% no-repeat,
+    linear-gradient(180deg, rgba(41, 39, 45, 0.04) 0%, transparent 100%) 57% 0 / 110px 100% no-repeat,
+    linear-gradient(180deg, rgba(59, 30, 31, 0.05) 0%, transparent 100%) 72% 0 / 90px 100% no-repeat,
+    linear-gradient(180deg, rgba(75, 35, 35, 0.03) 0%, transparent 100%) 88% 0 / 170px 100% no-repeat;
+}
+
+/* â”€â”€ Film grain / noise texture â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero-grain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+}
+
+/* â”€â”€ Vignette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.hero-vignette {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(to bottom, transparent 50%, rgba(104, 20, 36, 0.15) 65%, rgba(104, 20, 36, 0.45) 80%, rgba(104, 20, 36, 0.8) 92%, #681424 100%),
+    radial-gradient(ellipse 85% 80% at 50% 50%,
+      transparent 30%,
+      rgba(11, 11, 11, 0.55) 60%,
+      rgba(11, 11, 11, 0.80) 100%);
+}
+
+
+
+
+.hero-portrait-glow {
+  position: absolute;
+  right: -6%;
+  top: 18%;
+  width: min(52vw, 720px);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  z-index: 0;
+  /* Super soft volumetric lighting glow around the portrait */
+  background:
+    radial-gradient(circle, rgba(177, 18, 38, 0.26) 0%, rgba(139, 0, 0, 0.08) 45%, rgba(9, 9, 9, 0) 75%);
+  filter: blur(64px);
+}
+
+.hero-title {
+  @apply font-display uppercase leading-[0.9] text-bone;
+  font-size: clamp(3rem, 12vw, 5.5rem);
+  letter-spacing: -0.02em;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: clamp(5rem, 9vw, 8.5rem);
+  }
+}
+
+.hero-title span {
+  @apply inline-block;
+}
+
+.hero-cta {
+  @apply mt-6 inline-flex h-11 items-center gap-3 rounded-full border border-flare bg-flare px-6 text-xs font-bold uppercase tracking-[0.16em] text-bone shadow-redline transition-all duration-300;
+}
+
+.hero-cta:hover {
+  @apply -translate-y-1 bg-ember;
+}
+
+.hero-text-content {
+  position: relative;
+  z-index: 20;
+}
+
+.hero-portrait-wrap {
+  position: absolute;
+  
+  right: 0;
+  bottom: 0;
+
+  width: 42vw;
+  height: 100%;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+
+  overflow: visible;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Giant circular spotlight behind the character */
+.hero-spotlight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0.02) 40%,
+      transparent 75%);
+  filter: blur(40px);
+}
+
+/* Red ambient glow behind the character */
+.hero-ambient {
+  position: absolute;
+  top: 30%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle,
+      rgba(139, 0, 0, 0.08) 0%,
+      rgba(139, 0, 0, 0.03) 40%,
+      transparent 70%);
+  filter: blur(70px);
+}
+
+
+/* remove old frame/placeholder/glow â€” no longer used */
+.hero-portrait-frame,
+.hero-portrait-placeholder,
+.hero-portrait-glow {
+  display: none;
+}
+
+
+.hero-side-caption {
+  @apply absolute bottom-8 right-6 z-10 hidden items-center gap-4 text-right text-[11px] font-bold uppercase tracking-[0.28em] text-ash md:flex;
+  writing-mode: vertical-rl;
+}
+
+.technology-matters-section {
+  position: relative;
+  margin-top: -1px;
+  min-height: 118vh;
+  background: 
+    url('./assets/noise.webp') repeat,
+    linear-gradient(to bottom, #681424 0%, #8e0f22 25%, #b80d0d 50%, #b80d0d);
+  background-size: 200px 200px, auto;
+  background-blend-mode: overlay;
+  overflow: clip;
+}
+
+.technology-matters-sticky {
+  position: sticky;
+  top: 0;
+  display: grid;
+  min-height: 100vh;
+  align-items: center;
+  justify-items: center;
+  padding: clamp(1.25rem, 4vw, 4rem);
+}
+
+.technology-matters-title {
+  width: min(100%, 1500px);
+  margin-inline: auto;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(6rem, 10vw, 14rem);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.technology-matters-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.technology-matters-reveal-line {
+  display: inline-block;
+  color: transparent;
+  background-image: linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #2b2b2b 50%, #2b2b2b 100%);
+  background-size: 200% 100%;
+  background-position-x: 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  will-change: background-position;
+}
+
+.technology-matters-closing-wrap {
+  width: min(100%, 1500px);
+  margin-top: clamp(1.5rem, 4vw, 3.5rem);
+  margin-inline: auto;
+  text-align: left;
+  overflow: hidden;
+}
+
+.technology-matters-closing {
+  color: #111111;
+  font-size: clamp(1.6rem, 3.8vw, 4.35rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+@media (max-width: 767px) {
+  .technology-matters-sticky {
+    align-items: center;
+    justify-items: start;
+    padding-inline: 1rem;
+  }
+
+  .technology-matters-title {
+    width: 100%;
+    font-size: clamp(2.4rem, 11.5vw, 5.2rem);
+    line-height: 1.08;
+  }
+
+  .technology-matters-closing {
+    font-size: clamp(1rem, 5.6vw, 1.65rem);
+  }
+}
+
+.btn-primary,
+.btn-secondary {
+  @apply inline-flex min-h-12 items-center gap-2 border px-5 text-sm font-bold uppercase tracking-[0.14em] transition-all duration-300;
+}
+
+.btn-primary {
+  @apply border-flare bg-flare text-bone shadow-redline;
+}
+
+.btn-primary:hover {
+  @apply -translate-y-1 bg-ember;
+}
+
+.btn-secondary {
+  @apply border-white/20 bg-white/[0.03] text-bone;
+}
+
+.btn-secondary:hover {
+  @apply -translate-y-1 border-flare text-flare;
+}
+
+.about-cinema-section {
+  position: relative;
+  overflow: hidden;
+  background-color: #D10000;
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+.about-cinema-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8%;
+  background: linear-gradient(to bottom, #b80d0d, transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.about-cinema-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 60fr) minmax(360px, 40fr);
+  gap: clamp(3rem, 6vw, 7rem);
+  width: min(100%, 1600px);
+  margin-inline: auto;
+  padding: clamp(4rem, 6vw, 7rem) clamp(1.25rem, 4vw, 4rem);
+}
+
+.about-cinema-gallery {
+  --about-gallery-gap: clamp(1.25rem, 1.6vw, 1.625rem);
+  display: grid;
+  grid-template-columns: minmax(0, 53fr) minmax(0, 47fr);
+  grid-template-rows: 376px 398px;
+  gap: var(--about-gallery-gap);
+  min-height: calc(774px + var(--about-gallery-gap));
+  align-self: start;
+}
+
+.about-cinema-card {
+  position: relative;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 35px;
+  background: #300000;
+}
+
+.about-cinema-card-1 {
+  grid-row: 1 / span 2;
+  height: calc(774px + var(--about-gallery-gap));
+}
+
+.about-cinema-card-2 {
+  grid-column: 2;
+  grid-row: 1;
+  height: 376px;
+}
+
+.about-cinema-card-3 {
+  grid-column: 2;
+  grid-row: 2;
+  height: 398px;
+}
+
+.about-cinema-float {
+  width: 100%;
+  height: 170%;
+  will-change: transform;
+}
+
+/* Cards 2 & 3: standard cover fill, pan the wrapper upward */
+.about-cinema-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* â”€â”€ Large Left card (card-1): wrapper-based masked pan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   The .about-cinema-float is the overflow:hidden mask â€” same size as card.
+   .image-pan sits inside it, anchored top:0, with 35% extra height
+   added to the BOTTOM. The extra hangs below the card and is always
+   hidden by the parent overflow:hidden â€” invisible at every zoom level.
+
+   GSAP animation:
+     from yPercent: 0   â†’ top of image (head) visible at top of frame
+     to   yPercent: -35 â†’ wrapper moves UP â†’ lower body/legs revealed
+
+   The image itself: 100% Ã— 100% perfect fit inside .image-pan.        */
+.about-cinema-card-1 .about-cinema-float {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;   /* clips the bottom extension â€” always */
+  will-change: transform;
+}
+
+/* Pan wrapper â€” extension is at the bottom (top:0 anchor).
+   The extra 35% hangs below the card frame, never visible.          */
+.about-cinema-card-1 .image-pan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 135%;       /* 100% frame + 35% hidden below */
+  will-change: transform;
+}
+
+/* Image: perfect fit â€” do NOT modify */
+.about-cinema-card-1 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.about-cinema-copy-wrap {
+  position: sticky;
+  top: 80px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.6rem);
+  align-self: start;
+  padding-top: clamp(1rem, 3vw, 3rem);
+}
+
+.about-cinema-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding-top: 0.4rem;
+}
+
+.about-cinema-dots span {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1px solid rgba(245, 245, 245, 0.72);
+  border-radius: 999px;
+  background: transparent;
+  transition: background-color 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
+}
+
+.about-cinema-dots span.is-active {
+  background: #f5f5f5;
+  border-color: #f5f5f5;
+  transform: scale(1.16);
+}
+
+.about-cinema-copy {
+  max-width: 620px;
+  color: #F5F5F5;
+}
+
+.about-cinema-eyebrow {
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.5em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.about-cinema-copy h2 {
+  font-size: clamp(2.4rem, 4.8vw, 5.9rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.about-cinema-copy h2 span {
+  display: block;
+}
+
+.about-cinema-copy [data-about-fade] {
+  will-change: opacity, transform;
+}
+
+.about-cinema-copy p:not(.about-cinema-eyebrow) {
+  margin-top: clamp(1.3rem, 2.2vw, 2rem);
+  color: rgba(245, 245, 245, 0.88);
+  font-size: clamp(0.95rem, 1.08vw, 1.12rem);
+  font-weight: 400;
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+}
+
+.about-cinema-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.about-cinema-pill-row span {
+  border: 1px solid rgba(245, 245, 245, 0.26);
+  border-radius: 999px;
+  padding: 0.8rem 1.05rem;
+  color: #F5F5F5;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.section-shell {
+  @apply relative px-5 py-28 md:px-10 md:py-36;
+}
+
+.section-grid {
+  @apply relative grid gap-16 px-5 py-28 md:px-10 md:py-36 lg:grid-cols-[.85fr_1.15fr];
+}
+
+.sticky-visual {
+  @apply lg:sticky lg:top-20 lg:h-[calc(100vh-10rem)];
+}
+
+.visual-orbit {
+  @apply relative flex h-[520px] max-h-[72vh] items-center justify-center overflow-hidden border border-white/10 shadow-redline;
+  background-color: rgba(0, 0, 0, 0.25);
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+.visual-orbit::before {
+  content: "";
+  position: absolute;
+  width: 76%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(214, 40, 40, .45);
+  border-radius: 999px;
+  animation: drift 10s ease-in-out infinite;
+}
+
+.story-card {
+  @apply border-l border-flare p-7 text-2xl leading-relaxed text-bone md:p-10 md:text-4xl;
+  background-color: rgba(0, 0, 0, 0.2);
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+.timeline-item {
+  @apply relative mb-10 ml-10 w-auto border border-white/10 p-7 md:ml-0 md:w-1/2 md:p-9;
+  background-color: rgba(0, 0, 0, 0.2);
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+.timeline-dot {
+  @apply absolute -left-[43px] top-8 h-4 w-4 rounded-full bg-flare md:left-auto md:right-[-9px];
+  box-shadow: 0 0 30px rgba(214, 40, 40, .9);
+}
+
+.timeline-item:nth-child(even) .timeline-dot {
+  @apply md:-left-[7px] md:right-auto;
+}
+
+.skill-card {
+  @apply min-h-[290px] border border-white/10 p-6 transition-colors duration-300;
+  background-color: rgba(0, 0, 0, 0.25);
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+.skill-card:hover {
+  @apply border-flare bg-[#120202];
+}
+
+.skill-card h3 {
+  @apply font-display text-3xl uppercase text-bone;
+}
+
+.skill-pill,
+.tech-badge {
+  @apply inline-flex border border-white/15 bg-white/[0.04] px-3 py-2 text-xs font-bold uppercase tracking-[0.16em] text-ash;
+}
+
+.skill-pill:hover,
+.tech-badge:hover {
+  @apply border-flare text-flare;
+}
+
+.project-panel {
+  @apply grid min-h-screen gap-12 px-5 py-28 md:px-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center;
+}
+
+.project-copy {
+  @apply flex flex-col gap-7;
+}
+
+.project-copy h2 {
+  @apply font-display text-6xl uppercase leading-[0.85] text-bone md:text-8xl xl:text-9xl;
+}
+
+.mockup {
+  @apply relative min-h-[440px] overflow-hidden border border-white/10 shadow-redline md:min-h-[620px];
+  background-color: #0b0b0b;
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+.mockup::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(214, 40, 40, .45), transparent 28%),
+    radial-gradient(circle at 80% 65%, rgba(139, 0, 0, .45), transparent 34%);
+  filter: blur(30px);
+  animation: drift 13s ease-in-out infinite;
+}
+
+.mockup-top {
+  @apply relative z-10 flex gap-2 border-b border-white/10 p-5;
+}
+
+.mockup-top span {
+  @apply h-3 w-3 rounded-full bg-white/20;
+}
+
+.mockup-body {
+  @apply relative z-10 flex min-h-[380px] flex-col justify-between p-8 md:min-h-[560px] md:p-12;
+}
+
+.mockup-body p {
+  @apply text-xs font-bold uppercase tracking-[0.42em] text-ash;
+}
+
+.mockup-body h4 {
+  @apply mt-4 font-display text-6xl uppercase leading-none text-bone md:text-8xl;
+}
+
+.wave-lines {
+  @apply grid gap-4;
+}
+
+.wave-lines span {
+  @apply h-5 bg-gradient-to-r from-flare via-white/30 to-transparent;
+}
+
+.wave-lines span:nth-child(2) {
+  width: 76%;
+}
+
+.wave-lines span:nth-child(3) {
+  width: 52%;
+}
+
+.wave-lines span:nth-child(4) {
+  width: 88%;
+}
+
+.achievement-grid {
+  @apply grid gap-5 md:grid-cols-2 xl:grid-cols-3;
+}
+
+.achievement-card,
+.stat-card,
+.education-card,
+.contact-form {
+  @apply border border-white/10 p-7;
+  background-color: rgba(0, 0, 0, 0.25);
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+.achievement-card span,
+.education-card span {
+  @apply text-xs font-bold uppercase tracking-[0.35em] text-flare;
+}
+
+.achievement-card h3 {
+  @apply mt-3 font-display text-4xl uppercase text-bone;
+}
+
+.achievement-card p {
+  @apply mt-5 text-xl text-bone;
+}
+
+.achievement-card small {
+  @apply mt-5 block text-sm uppercase tracking-[0.22em] text-ash;
+}
+
+.stat-card p {
+  @apply text-sm font-bold uppercase tracking-[0.35em] text-flare;
+}
+
+.stat-card h3 {
+  @apply mt-12 font-display text-4xl uppercase leading-tight text-bone md:text-5xl;
+}
+
+.education-card {
+  @apply grid gap-4 md:grid-cols-[80px_1fr_220px_150px] md:items-center;
+}
+
+.education-card h3 {
+  @apply font-display text-3xl uppercase text-bone;
+}
+
+.education-card p,
+.education-card strong {
+  @apply text-lg text-ash;
+}
+
+.contact-link {
+  @apply inline-flex min-h-12 items-center gap-3 border border-white/10 px-4 text-sm transition-colors duration-300;
+}
+
+.contact-link:hover {
+  @apply border-flare text-flare;
+}
+
+.contact-form {
+  @apply grid gap-4;
+}
+
+.contact-form input,
+.contact-form textarea {
+  @apply w-full border border-white/10 px-5 py-4 text-bone outline-none transition-colors duration-300 placeholder:text-ash/65;
+  background-color: rgba(0, 0, 0, 0.35);
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  @apply border-flare;
+}
+
+@media (max-width: 1199px) {
+  .about-cinema-grid {
+    grid-template-columns: minmax(0, 58fr) minmax(320px, 42fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .about-cinema-gallery {
+    --about-gallery-gap: clamp(1rem, 1.7vw, 1.35rem);
+    grid-template-columns: minmax(0, 53fr) minmax(0, 47fr);
+    grid-template-rows: 300px 318px;
+    min-height: calc(618px + var(--about-gallery-gap));
+  }
+
+  .about-cinema-card-1 {
+    height: calc(618px + var(--about-gallery-gap));
+  }
+
+  .about-cinema-card-2 {
+    height: 300px;
+  }
+
+  .about-cinema-card-3 {
+    height: 318px;
+  }
+
+  .about-cinema-copy h2 {
+    font-size: clamp(2.55rem, 4.7vw, 4.4rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .about-cinema-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding-block: 4.5rem 5.5rem;
+  }
+
+  .about-cinema-gallery {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    min-height: auto;
+  }
+
+  .about-cinema-card,
+  .about-cinema-card-1,
+  .about-cinema-card-2,
+  .about-cinema-card-3 {
+    grid-column: auto;
+    grid-row: auto;
+    height: auto;
+    min-height: 56vh;
+  }
+
+  .about-cinema-card-2 {
+    min-height: 34vh;
+  }
+
+  .about-cinema-card-3 {
+    min-height: 44vh;
+  }
+
+  .about-cinema-copy-wrap {
+    position: relative;
+    top: auto;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-self: start;
+    padding-top: 0;
+  }
+
+  .about-cinema-copy h2 {
+    font-size: clamp(2.25rem, 12vw, 4.1rem);
+  }
+
+  .about-cinema-copy p:not(.about-cinema-eyebrow) {
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  .timeline-dot {
+    left: -43px;
+  }
+
+  .section-shell,
+  .section-grid,
+  .project-panel {
+    padding-top: 5.5rem;
+    padding-bottom: 5.5rem;
+  }
+}
+
+/* Premium Navbar Utilities */
+.navbar-glass {
+  background: rgba(9, 9, 9, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(177, 18, 38, 0.25);
+}
+
+.menu-btn-glass {
+  background: rgba(9, 9, 9, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(177, 18, 38, 0.35);
+  box-shadow: 0 0 0 rgba(214, 40, 40, 0);
+  transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
+}
+
+.menu-btn-glass:hover {
+  box-shadow: 0 0 25px rgba(214, 40, 40, 0.45);
+  transform: scale(1.05);
+  background: rgba(15, 15, 15, 0.9);
+}
+
+.menu-reveal-layer {
+  background-color: rgba(9, 9, 9, 0.28);
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.menu-panel-glow {
+  background-color: rgba(9, 9, 9, 0.74);
+  background-image: url('./assets/noise.webp');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  background-blend-mode: overlay;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-panel-glow::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle at 70% 30%, rgba(139, 0, 0, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.menu-panel-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.menu-panel-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, rgba(9, 9, 9, 0.8));
+  pointer-events: none;
+  z-index: 2;
+}
+
+.menu-item-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  color: #F5F5F5;
+  transition: color 0.3s ease;
+}
+
+.menu-item-text:hover {
+  color: #D62828;
+}
+
+.menu-item-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #D62828;
+  transition: width 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.menu-item-link:hover .menu-item-underline {
+  width: 100%;
+}
+
+@keyframes bg-scroll {
+  100% {
+    background-position: 2000px 0;
+  }
+}
+
+.text-outline-animated {
+  display: inline-block;
+  font-weight: 900;
+
+  /* Crisp 3px white outline around the text */
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: #F2F2F2;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  /* Red-textured rotation pattern image used for background clipping */
+  background-image: url('https://www.just-a-web-developer.com/wp-content/uploads/rotation-red.jpg');
+  background-size: cover;
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  /* Infinite horizontal scroll animation */
+  background-position: 0 0;
+  animation: bg-scroll 15s linear infinite;
+
+  /* Subtle red glow around the text */
+  filter: drop-shadow(0 0 18px rgba(139, 0, 0, 0.45)) drop-shadow(0 0 40px rgba(139, 0, 0, 0.20));
+
+  /* GPU-Accelerated rendering layer */
+  will-change: background-position;
+  transform: translate3d(0, 0, 0);
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   END OF STYLES
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+/* ================================================================
+   SKILL GALAXY — adapted from reference index.css, red/dark theme
+   ================================================================ */
+
+/* ── Section wrapper ─────────────────────────────────────────── */
+.galaxy-section {
+  position: relative;
+  width: 100%;
+  padding: clamp(4rem, 7vw, 8rem) clamp(1.25rem, 4vw, 4rem);
+
+  /*
+   * Strategy: dead-flat base so there is literally nothing for the eye
+   * to latch onto as a "band". Every colour comes from blurred
+   * pseudo-elements that live ABOVE this layer. Noise sits on top of
+   * everything else as a micro-texture via mix-blend-mode overlay.
+   */
+  background-color: #000;
+  overflow: hidden;
+  isolation: isolate; /* own stacking context — keeps blends contained */
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   LAYER 1  ::before  — the primary volumetric light mass
+   Large, heavily blurred radial orbs placed organically.
+   Nothing is rectangular. Nothing shares an edge.
+   blur(120px) turns every hard stop into a 120 px feather zone.
+   ───────────────────────────────────────────────────────────────── */
+.galaxy-section::before {
+  content: "";
+  position: absolute;
+  /* Extend 25% beyond the box on every side so blurred edges never
+     reach the section boundary and produce a visible dark frame.    */
+  inset: -25%;
+  width: 150%;
+  height: 150%;
+  pointer-events: none;
+  z-index: 1;
+
+  background:
+    /* A — deep maroon anchor at very top-center: bridges from About */
+    radial-gradient(ellipse 80% 40% at 50% -5%,
+      rgba(45, 0, 0, 0.95) 0%,
+      rgba(30, 0, 0, 0.60) 40%,
+      transparent 70%
+    ),
+    /* B — primary crimson bloom, center-upper: the "sun" of the scene */
+    radial-gradient(ellipse 65% 55% at 50% 22%,
+      rgba(110, 4, 4, 0.70) 0%,
+      rgba(70, 2, 2, 0.40) 35%,
+      rgba(35, 1, 1, 0.15) 60%,
+      transparent 80%
+    ),
+    /* C — secondary warm orb, offset left: breaks symmetry, feels natural */
+    radial-gradient(ellipse 55% 45% at 22% 35%,
+      rgba(80, 3, 3, 0.45) 0%,
+      rgba(45, 1, 1, 0.20) 45%,
+      transparent 70%
+    ),
+    /* D — counter-orb right: balances C, prevents left-heavy look */
+    radial-gradient(ellipse 50% 40% at 78% 30%,
+      rgba(65, 2, 2, 0.35) 0%,
+      rgba(35, 1, 1, 0.15) 45%,
+      transparent 70%
+    ),
+    /* E — deep mid anchor: pulls warmth down through center */
+    radial-gradient(ellipse 60% 50% at 50% 55%,
+      rgba(40, 1, 1, 0.30) 0%,
+      rgba(20, 0, 0, 0.15) 50%,
+      transparent 75%
+    ),
+    /* F — absolute base fill: dark maroon → black, zero hard edges */
+    radial-gradient(ellipse 120% 100% at 50% 0%,
+      rgba(25, 0, 0, 0.80) 0%,
+      rgba(10, 0, 0, 0.60) 30%,
+      rgba(4, 0, 0, 0.40) 55%,
+      rgba(1, 0, 0, 0.15) 75%,
+      transparent 100%
+    );
+
+  /* The single magic ingredient: genuine gaussian blur.
+     This is what blends the orb edges into each other and the
+     base — no CSS trick replicates this effect as well.          */
+  filter: blur(90px);
+  will-change: transform; /* own GPU layer — avoids repaint */
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   LAYER 2  ::after  — edge vignette + noise skin
+   Sits above the blurred orbs. Darkens all four edges so the
+   section never has a bright rim. Noise gives micro-texture.
+   ───────────────────────────────────────────────────────────────── */
+.galaxy-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+
+  background:
+    /* Noise micro-texture */
+    url('./assets/noise.webp'),
+    /* Edge vignette — radial from center, so all four sides darken equally */
+    radial-gradient(ellipse 85% 75% at 50% 28%,
+      transparent 25%,
+      rgba(0, 0, 0, 0.25) 55%,
+      rgba(0, 0, 0, 0.55) 75%,
+      rgba(0, 0, 0, 0.80) 100%
+    ),
+    /* Hard bottom seal: last 15% goes to pure black with no gap */
+    linear-gradient(to bottom,
+      transparent 85%,
+      rgba(0, 0, 0, 0.70) 93%,
+      #000 100%
+    );
+
+  background-size: 200px 200px, auto, auto;
+  background-blend-mode: overlay, normal, normal;
+  mix-blend-mode: normal;
+}
+
+/* ── Section header ──────────────────────────────────────────── */
+.galaxy-header {
+  position: relative;
+  z-index: 3; /* above both pseudo-element layers */
+  text-align: center;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.galaxy-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: #D62828;
+  margin-bottom: 0.6rem;
+}
+
+.galaxy-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2.4rem, 5vw, 5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #F5F5F5;
+  margin: 0;
+}
+
+/* ── Galaxy shell (direct port of reference .galaxy-shell) ────── */
+.galaxy-shell {
+  position: relative;
+  width: 100%;
+  min-height: 650px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  z-index: 3;
+}
+
+/* ── Canvas wrapper ──────────────────────────────────────────── */
+.galaxy-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 650px;
+}
+
+/* ── Explore button (centered over canvas) ───────────────────── */
+.explore-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(139, 0, 0, 0.55),
+    rgba(80, 0, 0, 0.30)
+  );
+  border: 1px solid rgba(214, 40, 40, 0.50);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.explore-btn:hover {
+  transform: translate(-50%, -50%) scale(1.10);
+  box-shadow:
+    0 0 32px rgba(214, 40, 40, 0.50),
+    0 0 64px rgba(139, 0, 0, 0.25);
+}
+
+.explore-btn:active {
+  transform: translate(-50%, -50%) scale(0.96);
+}
+
+/* Pulsing ring around explore button */
+.explore-btn-pulse {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(214, 40, 40, 0.40);
+  animation: explorePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes explorePulse {
+  0%, 100% { transform: scale(1);    opacity: 0.7; }
+  50%       { transform: scale(1.22); opacity: 0.15; }
+}
+
+.explore-btn-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #F5F5F5;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+/* ── Skill showcase (expanded grid view) ─────────────────────── */
+.skill-showcase-wrap {
+  width: 100%;
+  min-height: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px 40px;
+  gap: 0;
+}
+
+.skill-showcase-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.skill-showcase-sub {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  color: rgba(214, 40, 40, 0.75);
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.skill-showcase-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #F5F5F5;
+  margin: 0;
+  letter-spacing: -0.02em;
+  font-family: 'Poppins', sans-serif;
+}
+
+.skill-showcase-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  max-width: 900px;
+}
+
+/* Each skill card — direct port of reference .skill-showcase-card, red theme */
+.skill-showcase-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 22px;
+  border-radius: 16px;
+  background: rgba(139, 0, 0, 0.08);
+  border: 1px solid rgba(214, 40, 40, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: default;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.skill-showcase-card:hover {
+  background: rgba(139, 0, 0, 0.16);
+  border-color: rgba(214, 40, 40, 0.45);
+  box-shadow: 0 8px 28px rgba(139, 0, 0, 0.18);
+}
+
+.skill-showcase-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.skill-showcase-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(214, 40, 40, 0.5));
+}
+
+.skill-showcase-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #e2e8f0;
+  white-space: nowrap;
+}
+
+/* Back to galaxy button */
+.back-galaxy-btn {
+  margin-top: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 50px;
+  background: transparent;
+  border: 1px solid rgba(214, 40, 40, 0.35);
+  color: rgba(214, 40, 40, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.back-galaxy-btn:hover {
+  background: rgba(139, 0, 0, 0.12);
+  border-color: rgba(214, 40, 40, 0.65);
+  color: #D62828;
+  box-shadow: 0 0 20px rgba(139, 0, 0, 0.2);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .galaxy-shell,
+  .galaxy-canvas-wrap {
+    height: 480px;
+    min-height: 480px;
+  }
+
+  .skill-showcase-wrap {
+    min-height: 480px;
+    padding: 32px 20px 28px;
+  }
+
+  .skill-showcase-grid {
+    gap: 8px;
+  }
+
+  .skill-showcase-card {
+    padding: 10px 16px;
+  }
+
+  .skill-showcase-name {
+    font-size: 13px;
+  }
+
+  .explore-btn {
+    width: 80px;
+    height: 80px;
+  }
+
+  .explore-btn-label {
+    font-size: 9px;
+  }
+}
+
+.front {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+  z-index: 6;
+  transition: all 0.25s ease;
+}
+
+.back {
+  opacity: 0.75;
+  transform: scale(0.95);
+  filter: brightness(0.8) blur(0);
+  z-index: 2;
+  transition: all 0.25s ease;
+}
+
+.behind {
+  opacity: 0;
+  transform: scale(0.85);
+  filter: blur(3px);
+  z-index: 2;
+  transition: all 0.25s ease;
+}
