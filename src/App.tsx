@@ -1,11 +1,10 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Lenis from 'lenis';
 import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   ArrowDown,
-  ArrowUpRight,
   Download,
   Github,
   Linkedin,
@@ -47,28 +46,60 @@ const skillGroups = [
 
 const projects = [
   {
-    title: 'CardiaCare',
-    desc: 'AI-powered heart health suite featuring ECG analysis and AI report summarization.',
-    tech: ['HTML', 'CSS', 'JavaScript', 'Python'],
-    motif: 'ECG intelligence',
+    title: '3D AI Interviewer System',
+    meta: 'AI product / Spatial interface',
+    year: '2026',
+    desc: 'A conversational interview simulator shaped around immersive presence, adaptive questioning, and human-like feedback loops.',
+    tech: ['React', 'Three.js', 'AI'],
+    image: '',
   },
   {
-    title: 'Verve',
-    desc: 'AI-powered nutrition and wellness platform for chronic disease management.',
-    tech: ['Flutter', 'AI Integration'],
-    motif: 'Wellness systems',
+    title: 'Cardiacare',
+    meta: 'Healthcare AI / Diagnostics',
+    year: '2025',
+    desc: 'An intelligent heart-health suite for ECG analysis, report understanding, and patient-first cardiac insights.',
+    tech: ['Python', 'JavaScript', 'ML'],
+    image: '',
   },
   {
     title: 'Aurora Voices',
-    desc: 'Full-stack MERN social platform enabling users to share poems, express thoughts, and interact in real time.',
-    tech: ['MERN', 'Vercel', 'Render', 'MongoDB Atlas'],
-    motif: 'Real-time expression',
+    meta: 'Social platform / Expression',
+    year: '2025',
+    desc: 'A full-stack creative network where poetry, voice, and real-time community interactions move through a calm publishing experience.',
+    tech: ['MERN', 'MongoDB', 'Realtime'],
+    image: '',
+  },
+  {
+    title: 'Verve',
+    meta: 'Wellness intelligence / Mobile',
+    year: '2025',
+    desc: 'An AI-powered nutrition and wellness platform designed for chronic disease support and everyday health decisions.',
+    tech: ['Flutter', 'AI Integration'],
+    image: '',
+  },
+  {
+    title: 'Ultracode AI',
+    meta: 'Developer tooling / AI systems',
+    year: '2026',
+    desc: 'A focused coding companion concept for accelerating build flow, reasoning through code, and reducing product iteration friction.',
+    tech: ['React', 'Node.js', 'LLM'],
+    image: '',
   },
   {
     title: 'GazeVoice',
-    desc: 'Browser-based AAC communication system for paralyzed patients using eye gaze tracking.',
+    meta: 'Assistive technology / Browser AI',
+    year: '2025',
+    desc: 'A browser-based AAC communication system that translates eye-gaze intent into speech for patients with limited mobility.',
     tech: ['WebGazer.js', 'Text-to-Speech'],
-    motif: 'Assistive communication',
+    image: '',
+  },
+  {
+    title: 'Akshara.AI',
+    meta: 'Language AI / Learning',
+    year: '2026',
+    desc: 'A language intelligence project exploring accessible learning, multilingual assistance, and culturally aware interaction design.',
+    tech: ['AI', 'NLP', 'Product Design'],
+    image: '',
   },
 ];
 
@@ -466,7 +497,7 @@ function About() {
 
           <article className="about-cinema-copy">
             <p className="about-cinema-eyebrow" data-about-fade>About Me</p>
-            
+
             <p data-about-fade>
               I am Vivek K K, a Computer Science Engineering student specializing in AI and ML, drawn to the space where clean interfaces, reliable systems, and intelligent tools meet.
             </p>
@@ -507,60 +538,287 @@ function Experience() {
   );
 }
 
-function ProjectMockup({ title, motif }: { title: string; motif: string }) {
-  return (
-    <div className="mockup" aria-label={`${title} interface preview`}>
-      <div className="mockup-top">
-        <span />
-        <span />
-        <span />
-      </div>
-      <div className="mockup-body">
-        <div>
-          <p>{motif}</p>
-          <h4>{title}</h4>
-        </div>
-        <div className="wave-lines">
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Projects() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const rowHeightRef = useRef(120);
+  const activeProjectRef = useRef(0);
+  const [activeProject, setActiveProject] = useState(0);
+
+  const scrollToProject = (index: number) => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const targetY = Math.round(section.offsetTop + rowHeightRef.current * index);
+    const lenis = (window as any).lenis;
+
+    if (lenis?.scrollTo) {
+      lenis.scrollTo(targetY, { duration: 1.1, easing: (t: number) => t });
+    } else {
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const timeline = timelineRef.current;
+    const path = pathRef.current;
+    const stack = stackRef.current;
+    const track = trackRef.current;
+    if (!section || !timeline || !path || !stack || !track) return;
+
+    let resizeObserver: ResizeObserver | undefined;
+
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray<HTMLElement>('[data-project-item]');
+      let currentIndex = 0;
+      let rowHeight = 120;
+      let smoothedProgress = 0;
+      let smoothedVelocity = 0;
+      const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
+
+      const curveOffset = (distance: number) => {
+        const absDistance = Math.abs(distance);
+        const directionBias = distance * (isMobile() ? 1.5 : 2.5);
+        const mobileCurve = [-18, -6, 8];
+        const desktopCurve = [-42, -16, 18];
+        const curve = isMobile() ? mobileCurve : desktopCurve;
+
+        if (absDistance <= 1) {
+          return gsap.utils.interpolate(curve[0], curve[1], absDistance) + directionBias;
+        }
+
+        return gsap.utils.interpolate(curve[1], curve[2], Math.min(absDistance - 1, 1)) + directionBias;
+      };
+
+      const setProjectGeometry = () => {
+        const nextRowHeight = isMobile()
+          ? gsap.utils.clamp(76, 108, window.innerHeight * 0.16)
+          : gsap.utils.clamp(102, 150, window.innerHeight * 0.165);
+
+        rowHeight = nextRowHeight;
+        rowHeightRef.current = rowHeight;
+        section.style.setProperty('--project-row-height', `${rowHeight}px`);
+        section.style.setProperty('--project-visible-height', `${rowHeight * 5}px`);
+
+        const timelineHeight = Math.max(2500, rowHeight * projects.length + 1200);
+        timeline.style.height = `${timelineHeight}px`;
+        timeline.style.top = '0';
+        timeline.style.left = '0';
+
+        gsap.set(track, { height: rowHeight * projects.length });
+        items.forEach((item, index) => gsap.set(item, { y: index * rowHeight, height: rowHeight }));
+      };
+
+      const renderProjectFrame = (progress = 0, velocity = 0) => {
+        const activeFloat = progress * (projects.length - 1);
+        const centeredTrackY = (rowHeight * 5) / 2 - rowHeight / 2 - activeFloat * rowHeight;
+        const nearestIndex = gsap.utils.clamp(0, projects.length - 1, Math.round(activeFloat));
+
+        gsap.to(track, {
+          y: centeredTrackY,
+          duration: 1.05,
+          ease: 'power3.out',
+          overwrite: 'auto',
+        });
+
+        items.forEach((item, index) => {
+          const distance = index - activeFloat;
+          const absDistance = Math.abs(distance);
+          const visibility = gsap.utils.clamp(0.46, 1, 1 - absDistance / 4.2);
+          const isNearest = index === nearestIndex;
+
+          gsap.to(item, {
+            x: curveOffset(distance),
+            scale: gsap.utils.interpolate(1.08, 0.9, Math.min(absDistance / 2.35, 1)),
+            opacity: gsap.utils.interpolate(0.12, 1, visibility),
+            color: isNearest ? '#f7f7f7' : '#373737',
+            duration: 0.95,
+            ease: 'power3.out',
+            overwrite: 'auto',
+          });
+
+          item.classList.toggle('is-active', isNearest);
+        });
+
+        if (nearestIndex !== currentIndex) {
+          currentIndex = nearestIndex;
+          activeProjectRef.current = nearestIndex;
+          setActiveProject(nearestIndex);
+        }
+      };
+
+      setProjectGeometry();
+
+      const linePath = path;
+      const lineLen = linePath.getTotalLength();
+
+      gsap.set(linePath, {
+        strokeDasharray: lineLen,
+        strokeDashoffset: lineLen,
+      });
+
+      gsap.to(linePath, {
+        strokeDashoffset: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: () => `+=${rowHeight * (projects.length + 1.2)}`,
+          scrub: 6.75,
+        },
+      });
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${rowHeight * (projects.length - 1)}`,
+        pin: '.projects-showcase-inner',
+        pinSpacing: true,
+        scrub: 1.25,
+        invalidateOnRefresh: true,
+        snap: {
+          snapTo: 1 / (projects.length - 1),
+          duration: { min: 0.35, max: 0.82 },
+          delay: 0.03,
+          ease: 'power3.out',
+        },
+        onRefresh: (self) => {
+          setProjectGeometry();
+          renderProjectFrame(self.progress, self.getVelocity());
+        },
+        onUpdate: (self) => renderProjectFrame(self.progress, self.getVelocity()),
+      });
+
+      resizeObserver = new ResizeObserver(() => ScrollTrigger.refresh());
+      resizeObserver.observe(section);
+
+      let wheelLocked = false;
+      const handleProjectWheel = (event: WheelEvent) => {
+        if (Math.abs(event.deltaY) < 10) return;
+        event.preventDefault();
+
+        if (wheelLocked) return;
+        wheelLocked = true;
+
+        const direction = event.deltaY > 0 ? 1 : -1;
+        const nextIndex = gsap.utils.clamp(0, projects.length - 1, activeProjectRef.current + direction);
+
+        if (nextIndex !== activeProjectRef.current) {
+          activeProjectRef.current = nextIndex;
+          scrollToProject(nextIndex);
+        }
+
+        window.setTimeout(() => {
+          wheelLocked = false;
+        }, 650);
+      };
+
+      section.addEventListener('wheel', handleProjectWheel, { passive: false });
+
+      requestAnimationFrame(() => renderProjectFrame(0, 0));
+
+      return () => {
+        resizeObserver?.disconnect();
+        section.removeEventListener('wheel', handleProjectWheel);
+      };
+
+      return () => {
+        resizeObserver?.disconnect();
+      };
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
+  const currentProject = projects[activeProject];
+
   return (
-    <section id="projects" className="bg-gradient-to-b from-blood via-[#160101] to-void" data-section-theme="#090909">
-      {projects.map((project, index) => (
-        <article key={project.title} className="project-panel">
-          <div className="project-copy" data-reveal>
-            <p className="text-sm font-bold uppercase tracking-[0.42em] text-flare">Featured Project / 0{index + 1}</p>
-            <h2>{project.title}</h2>
-            <p className="max-w-2xl text-xl leading-relaxed text-ash">{project.desc}</p>
-            <div className="flex flex-wrap gap-2">
-              {project.tech.map((tech) => (
-                <span className="tech-badge" key={tech}>
-                  {tech}
-                </span>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <a className="btn-primary" href="#contact">
-                Live Demo <ArrowUpRight size={18} />
-              </a>
-              <a className="btn-secondary" href="https://github.com/" target="_blank" rel="noreferrer">
-                GitHub <Github size={18} />
-              </a>
-            </div>
+    <section ref={sectionRef} id="projects" className="projects-showcase" data-section-theme="#040404">
+      <div className="projects-section-heading" data-reveal>
+        <p>Featured work</p>
+        <h2>PROJECTS</h2>
+      </div>
+
+      <div className="projects-timeline" ref={timelineRef} aria-hidden="true">
+        <svg
+          className="fluid-line-svg"
+          id="fluid-line-svg"
+          viewBox="0 0 1000 2195"
+          preserveAspectRatio="xMinYMid meet"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            ref={pathRef}
+            className="fluid-line"
+            id="fluid-line"
+            d="M 0,120 
+                C 320,80 620,250 500,500 
+                C 400,700 -180,900 150,1080 
+                C 560,1320 960,1220 1900,1180 
+                C 1260,1120 1380,1200 1800,1360"
+            style={{ strokeDashoffset: '180px', strokeDasharray: '3004.42' }}
+            fill="none"
+            stroke="red"
+            strokeWidth="80"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+
+      <div className="projects-showcase-inner">
+        <div className="projects-stack" ref={stackRef}>
+          <div className="projects-track" ref={trackRef}>
+            {projects.map((project, index) => {
+              const isActive = index === activeProject;
+
+              return (
+                <article
+                  key={project.title}
+                  className={`project-story ${isActive ? 'is-active' : ''}`}
+                  data-project-item
+                  aria-current={isActive ? 'true' : undefined}
+                  onClick={() => scrollToProject(index)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <h2>{project.title}</h2>
+                </article>
+              );
+            })}
           </div>
-          <div data-reveal>
-            <ProjectMockup title={project.title} motif={project.motif} />
+        </div>
+
+        <aside className="projects-preview-wrap" aria-live="polite">
+          <div className="projects-preview-topline">
+            <span>{activeProject + 1 < 10 ? `0${activeProject + 1}` : activeProject + 1} {currentProject.year}</span>
+            <span>Preview</span>
           </div>
-        </article>
-      ))}
+          <div className="projects-preview">
+            <AnimatePresence mode="sync">
+              <motion.div
+                key={currentProject.title}
+                className="projects-preview-image"
+                initial={{ opacity: 0, scale: 1.035, filter: 'blur(12px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.985, filter: 'blur(10px)' }}
+                transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {currentProject.image ? (
+                  <img src={currentProject.image} alt={`${currentProject.title} preview`} />
+                ) : (
+                  <div className="projects-preview-placeholder" aria-label={`${currentProject.title} image placeholder`}>
+                    <span>{currentProject.title}</span>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </aside>
+      </div>
     </section>
   );
 }
@@ -685,8 +943,8 @@ export default function App() {
       <TechnologyMattersSection />
       <About />
       <SkillGalaxy3D />
-      <Experience />
       <Projects />
+      <Experience />
       <Achievements />
       <CodingProfiles />
       <Education />
